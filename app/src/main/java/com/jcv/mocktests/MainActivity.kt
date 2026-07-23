@@ -18,7 +18,7 @@ import com.jcv.mocktests.ui.exam.ExamScreen
 import com.jcv.mocktests.ui.exam.ExamViewModel
 import com.jcv.mocktests.ui.home.HomeScreen
 import com.jcv.mocktests.ui.course.CourseDetailsScreen
-import com.jcv.mocktests.ui.course.InstructionsScreen
+import com.jcv.mocktests.ui.exam.InstructionsScreen
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
