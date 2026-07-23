@@ -1,4 +1,4 @@
-package com.jcv.mocktests.ui.course
+package com.jcv.mocktests.ui.exam
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
