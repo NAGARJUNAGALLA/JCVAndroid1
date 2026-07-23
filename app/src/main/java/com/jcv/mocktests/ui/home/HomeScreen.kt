@@ -1,5 +1,6 @@
 package com.jcv.mocktests.ui.home
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,18 +10,17 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
 import com.jcv.mocktests.data.model.Course
 import com.jcv.mocktests.data.repository.CbtRepository
 import kotlinx.coroutines.launch
@@ -31,6 +31,7 @@ fun HomeScreen(
     onCourseSelected: (String) -> Unit,
     onLogout: () -> Unit
 ) {
+    val context = LocalContext.current
     val repository = remember { CbtRepository() }
     val scope = rememberCoroutineScope()
     var courses by remember { mutableStateOf<List<Course>>(emptyList()) }
@@ -44,6 +45,7 @@ fun HomeScreen(
                 courses = repository.fetchCourses()
             } catch (e: Exception) {
                 e.printStackTrace()
+                Toast.makeText(context, "Failed to load courses: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 isLoading = false
             }
@@ -102,7 +104,21 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(filteredCourses) { course ->
-                        CourseCard(course = course, onClick = { onCourseSelected(course.sheetId) })
+                        CourseCard(
+                            course = course, 
+                            onClick = { 
+                                if (course.sheetId.isNotBlank()) {
+                                    try {
+                                        onCourseSelected(course.sheetId)
+                                    } catch (e: Exception) {
+                                        // If the navigation crashes, show it on screen instead of closing the app
+                                        Toast.makeText(context, "Crash Caught: ${e.message}", Toast.LENGTH_LONG).show()
+                                    }
+                                } else {
+                                    Toast.makeText(context, "Error: Course has no valid ID", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        )
                     }
                 }
             }
